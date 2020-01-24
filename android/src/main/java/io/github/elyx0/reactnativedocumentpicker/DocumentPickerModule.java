@@ -57,6 +57,7 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule {
 	private static final String FIELD_NAME = "name";
 	private static final String FIELD_TYPE = "type";
 	private static final String FIELD_SIZE = "size";
+	private static final String FIELD_FROM_STORAGE = "fromStorage";
 
 	private final ActivityEventListener activityEventListener = new BaseActivityEventListener() {
 		@Override
@@ -187,8 +188,8 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule {
   private WritableMap getDataFromURI(Uri uri) {
     WritableMap map = Arguments.createMap();
     Activity currentActivity = getCurrentActivity();
-    map.putString("uri", uri.toString());
 
+    String prefix = "file://";
     String path = null;
     String readableSize = null;
     Long size = null;
@@ -196,15 +197,17 @@ public class DocumentPickerModule extends ReactContextBaseJavaModule {
     path = getPath(currentActivity, uri);
 
     if (path != null) {
-      map.putString(FIELD_PATH, path);
+      map.putString(FIELD_PATH, (prefix + path));
       size = getFileSize(path);
       map.putInt(FIELD_SIZE, size.intValue());
+      map.putBoolean(FIELD_FROM_STORAGE, true);
     } else {
       path = getFileFromUri(currentActivity, uri);
       if (path != null) {
         size = getFileSize(path);
-        map.putString(FIELD_PATH, path);
+        map.putString(FIELD_PATH, (prefix + path));
         map.putInt(FIELD_SIZE, size.intValue());
+        map.putBoolean(FIELD_FROM_STORAGE, false);
       }
     }
 
